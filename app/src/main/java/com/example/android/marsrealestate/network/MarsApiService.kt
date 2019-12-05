@@ -20,13 +20,18 @@
 
 package com.example.android.marsrealestate.network
 
+import com.squareup.moshi.Moshi
+import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import retrofit2.Call
 import retrofit2.Retrofit
-import retrofit2.converter.scalars.ScalarsConverterFactory
+import retrofit2.converter.moshi.MoshiConverterFactory
 import retrofit2.http.GET
 
 private const val BASE_URL = " https://android-kotlin-fun-mars-server.appspot.com/"
 
+private val moshi = Moshi.Builder()
+        .add(KotlinJsonAdapterFactory())
+        .build()
 
 /*
  * Retrofit needs at least 2 things available to it to build a web services API:
@@ -35,9 +40,11 @@ private const val BASE_URL = " https://android-kotlin-fun-mars-server.appspot.co
  * In this case, we fetch a JSON response from the web service and return it as a String.
  * Retrofit has a ScalarsConverter that supports strings and other primitive types, so we call
  * addConverterFactory() on the builder with an instance of ScalarsConverterFactory.
+ *
+ * UPDATE: By introducing moshi, we get rid of ScalarsConverterFactory. With moshi, we'll parse the JSON
  */
 private val retrofit = Retrofit.Builder()
-        .addConverterFactory(ScalarsConverterFactory.create())
+        .addConverterFactory(MoshiConverterFactory.create(moshi))
         .baseUrl(BASE_URL)
         .build()
 
@@ -47,7 +54,7 @@ private val retrofit = Retrofit.Builder()
  */
 interface MarsApiService {
     @GET("realestate") // <-- path/endpoint
-    fun getProperties(): Call<String>
+    fun getProperties(): Call<List<MarsProperty>>
 }
 
 
