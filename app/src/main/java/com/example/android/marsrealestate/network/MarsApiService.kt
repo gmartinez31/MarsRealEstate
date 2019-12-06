@@ -20,9 +20,10 @@
 
 package com.example.android.marsrealestate.network
 
+import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterFactory
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
-import retrofit2.Call
+import kotlinx.coroutines.Deferred
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 import retrofit2.http.GET
@@ -42,19 +43,28 @@ private val moshi = Moshi.Builder()
  * addConverterFactory() on the builder with an instance of ScalarsConverterFactory.
  *
  * UPDATE: By introducing moshi, we get rid of ScalarsConverterFactory. With moshi, we'll parse the JSON
+ *
+ * UPDATE (COROUTINES): Call adapters add the ability for Retrofit to create APIs that return
+ * something other than the default Call class. CoroutineCallAdapterFactory allows us to
+ * replace the Call object that getProperties() returns with a Deferred object instead.
  */
 private val retrofit = Retrofit.Builder()
         .addConverterFactory(MoshiConverterFactory.create(moshi))
+        .addCallAdapterFactory(CoroutineCallAdapterFactory())
         .baseUrl(BASE_URL)
         .build()
 
 /*
  * When this method is invoked, Retrofit appends the endpoint 'realestate' to the BASE_URL,
  * and creates a Call object. That Call object is used to start the HTTP request.
+ *
+ * UPDATE (COROUTINES): The Deferred interface defines a coroutine job that returns a result
+ * value (Deferred inherits from Job). The Deferred interface includes a method called await(),
+ * which causes the code to wait without blocking until the value is ready, and then that value is returned.
  */
 interface MarsApiService {
     @GET("realestate") // <-- path/endpoint
-    fun getProperties(): Call<List<MarsProperty>>
+    fun getProperties(): Deferred<List<MarsProperty>>
 }
 
 
