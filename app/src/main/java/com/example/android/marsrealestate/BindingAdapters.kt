@@ -17,3 +17,23 @@
 
 package com.example.android.marsrealestate
 
+import android.widget.ImageView
+import androidx.core.net.toUri
+import androidx.databinding.BindingAdapter
+import com.bumptech.glide.Glide
+
+// Binding adapters are extension methods that sit between a view and bound data to provide custom behavior when the data changes
+
+// this annotation tells data binding that we want this binding adapter executed when an xml item has the defined "imageUrl" attribute
+@BindingAdapter("imageUrl")
+fun bindImage(imgView: ImageView, imgUrl: String?) {
+    imgUrl?.let {
+        // a lot is going on here. Basically, the conversion from URL string (from XML) to a URI object happens here
+        val imgUri = imgUrl.toUri().buildUpon().scheme("https").build()
+
+        // now we can use Glide to show the image by passing our URI object & view
+        Glide.with(imgView.context)
+                .load(imgUri)
+                .into(imgView)
+    }
+}
