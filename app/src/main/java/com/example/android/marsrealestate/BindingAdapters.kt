@@ -21,6 +21,7 @@ import android.widget.ImageView
 import androidx.core.net.toUri
 import androidx.databinding.BindingAdapter
 import com.bumptech.glide.Glide
+import com.bumptech.glide.request.RequestOptions
 
 // Binding adapters are extension methods that sit between a view and bound data to provide custom behavior when the data changes
 
@@ -34,6 +35,9 @@ fun bindImage(imgView: ImageView, imgUrl: String?) {
         // now we can use Glide to show the image by passing our URI object & view
         Glide.with(imgView.context)
                 .load(imgUri)
+                .apply(RequestOptions()                             // here we add loading and error images
+                        .placeholder(R.drawable.loading_animation)
+                        .error(R.drawable.ic_broken_image))
                 .into(imgView)
     }
 }
