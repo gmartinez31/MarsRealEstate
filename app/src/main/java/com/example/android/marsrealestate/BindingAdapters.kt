@@ -20,8 +20,11 @@ package com.example.android.marsrealestate
 import android.widget.ImageView
 import androidx.core.net.toUri
 import androidx.databinding.BindingAdapter
+import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
+import com.example.android.marsrealestate.network.MarsProperty
+import com.example.android.marsrealestate.overview.PhotoGridAdapter
 
 // Binding adapters are extension methods that sit between a view and bound data to provide custom behavior when the data changes
 
@@ -40,4 +43,10 @@ fun bindImage(imgView: ImageView, imgUrl: String?) {
                         .error(R.drawable.ic_broken_image))
                 .into(imgView)
     }
+}
+
+@BindingAdapter("listData")
+fun bindRecyclerView(view: RecyclerView, properties: List<MarsProperty>?) {
+    val adapter = view.adapter as PhotoGridAdapter
+    adapter.submitList(properties)
 }
