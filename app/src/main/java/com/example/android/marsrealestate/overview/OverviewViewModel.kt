@@ -28,14 +28,14 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import java.lang.Exception
 
-/**
- * The [ViewModel] that is attached to the [OverviewFragment].
- */
+enum class MarsApiStatus { LOADING, ERROR, DONE }
+
+/**The [ViewModel] that is attached to the [OverviewFragment]. */
 class OverviewViewModel : ViewModel() {
 
-    private val _response = MutableLiveData<String>()
-    val response: LiveData<String>
-        get() = _response
+    private val _status = MutableLiveData<MarsApiStatus>()
+    val status: LiveData<MarsApiStatus>
+        get() = _status
 
     private val _properties = MutableLiveData<List<MarsProperty>>()
     val properties: LiveData<List<MarsProperty>>
@@ -76,11 +76,13 @@ class OverviewViewModel : ViewModel() {
 
             val getMarsPropsDeferred = MarsApi.retrofitService.getProperties()
             try {
+                _status.value = MarsApiStatus.LOADING
                 val listResult = getMarsPropsDeferred.await()
-                _response.value = "Success: ${listResult.size} Mars properties retrieved"
+                _status.value = MarsApiStatus.DONE
                 _properties.value = listResult
             } catch (e: Exception) {
-                _response.value = "Failure: ${e.message}"
+                _status.value = MarsApiStatus.ERROR
+                _properties.value = ArrayList()
             }
         }
 
